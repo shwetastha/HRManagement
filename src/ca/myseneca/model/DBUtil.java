@@ -5,5 +5,5 @@ public class DBUtil{
 	private static String url;
 	private static String user;
 	private static String password;
-	private static String newVariable;
+	private static String newVariable2;
 }
