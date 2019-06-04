@@ -4,24 +4,23 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Scanner;
 
+import ca.myseneca.model.DBAccessHelper;
+import ca.myseneca.model.DBAccessHelperImpl;
 import ca.myseneca.model.DBUtil;
-
-
-import java.sql.Statement;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.sql.DriverManager;
-import ca.myseneca.model.DBUtil;
-import java.util.Properties;
 
 public class HRManagement {
 
 	public static void main(String[] args) throws Exception {
+		System.out.println("Testing Connection: ");
+		testGetConnection();
+		System.out.println("*********************");
+		System.out.println("Testing Security: ");
+		
 
+	}
+	
+	public static void testGetConnection() {
 		Connection con = DBUtil.getConnection();
 
 		ResultSet rs = null;
@@ -37,6 +36,7 @@ public class HRManagement {
 
 			while (rs.next()) {
 				System.out.println(rs.getString(1) + "  " + rs.getString(3));
+				System.out.println("Connection SuccessFul");
 			}
 
 		} catch (NullPointerException e) {
@@ -50,10 +50,19 @@ public class HRManagement {
 			System.out.println("Exception: " + e.getMessage());
 
 		} finally {
-			rs.close();
-			pst.close();
-			con.close();
+			try {
+				rs.close();
+				pst.close();
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
 		}
-
+	}
+	
+	public static void testGetEmployeeID() {
+//		DBAccessHelper dbaccess = new DBAccessHelperImpl();
+//		dbaccess.getEmployeeID(user, password)
 	}
 }
