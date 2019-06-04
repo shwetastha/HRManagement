@@ -1,5 +1,6 @@
 package ca.myseneca.model;
 
+import java.sql.ResultSet;
 import java.util.Date;
 
 /**
@@ -13,14 +14,15 @@ import java.util.Date;
 * @since   2019-03-31
 */
 public class Employee {
-
+	
+	
 	private int employee_id;
 	private String first_name;
 	private String last_name;
 	private String email;
-	private long phone_number;
+	private String phone_number;
 	private Date hire_date;
-	private int job_id;
+	private String job_id;
 	private double salary;
 	private double commission_pct;
 	private int manager_id;
@@ -50,10 +52,10 @@ public class Employee {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public long getPhone_number() {
+	public String getPhone_number() {
 		return phone_number;
 	}
-	public void setPhone_number(long phone_number) {
+	public void setPhone_number(String phone_number) {
 		this.phone_number = phone_number;
 	}
 	public Date getHire_date() {
@@ -62,10 +64,10 @@ public class Employee {
 	public void setHire_date(Date hire_date) {
 		this.hire_date = hire_date;
 	}
-	public int getJob_id() {
+	public String getJob_id() {
 		return job_id;
 	}
-	public void setJob_id(int job_id) {
+	public void setJob_id(String job_id) {
 		this.job_id = job_id;
 	}
 	public double getSalary() {
@@ -93,5 +95,9 @@ public class Employee {
 		this.department_id = department_id;
 	}
 	
+	@Override
+	public String toString() {
+		return "Employee ID: "+getEmployee_id()+", Name: "+getFirst_name()+" "+getLast_name()+", Hire Date: "+getHire_date();
+	}
 	
 }

@@ -4,18 +4,31 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import ca.myseneca.model.DBAccessHelper;
 import ca.myseneca.model.DBAccessHelperImpl;
 import ca.myseneca.model.DBUtil;
+import ca.myseneca.model.Employee;
 
 public class HRManagement {
+	static DBAccessHelper dbaccess = new DBAccessHelperImpl();
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("Testing Connection: ");
 		testGetConnection();
 		System.out.println("*********************");
 		System.out.println("Testing Security: ");
+		testGetEmployeeID();
+		System.out.println("*********************");
+		System.out.println("Testing GetAllEmployees: ");
+		testGetAllEmployees();
+		System.out.println("*********************");
+		System.out.println("Testing GetEmployeesByDepartmentID: ");
+		testGetEmployeesByDepartmentID();
+		System.out.println("*********************");
+		System.out.println("Testing GetEmployeeByID: ");
+		testGetEmployeeByID();
 		
 
 	}
@@ -62,7 +75,40 @@ public class HRManagement {
 	}
 	
 	public static void testGetEmployeeID() {
-//		DBAccessHelper dbaccess = new DBAccessHelperImpl();
-//		dbaccess.getEmployeeID(user, password)
+		
+		String user = "hr";
+		String password = "hr";
+		System.out.println("User: "+user+", Password: "+password);
+		System.out.println("Security Output: "+dbaccess.getEmployeeID(user, password));
+		
+		user = "java";
+		password = "java";
+		System.out.println("User: "+user+", Password: "+password);
+		System.out.println("Security Output: "+dbaccess.getEmployeeID(user, password));
+		
+		user = "1234";
+		password = "java";
+		System.out.println("User: "+user+", Password: "+password);
+		System.out.println("Security Output: "+dbaccess.getEmployeeID(user, password));
+	}
+	
+	public static void testGetAllEmployees() {
+		
+		ArrayList<Employee> list= dbaccess.getAllEmployees();
+		System.out.println("Total employee count: "+list.size());
+	}
+	
+	public static void testGetEmployeesByDepartmentID() {
+		
+		ArrayList<Employee> list = new ArrayList<Employee>();
+		list= dbaccess.getEmployeesByDepartmentID(80);
+		System.out.println("Total employee count for department 80: "+list.size());
+		list= dbaccess.getEmployeesByDepartmentID(0);
+		System.out.println("Total employee count for department 0: "+list.size());
+	}
+	
+	public static void testGetEmployeeByID() {
+		Employee emp = dbaccess.getEmployeeByID(164);
+		System.out.println(emp.toString());
 	}
 }
