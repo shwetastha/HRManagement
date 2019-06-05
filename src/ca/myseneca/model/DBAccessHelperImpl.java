@@ -8,7 +8,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
+
+import oracle.jdbc.internal.OracleTypes;
 
 public class DBAccessHelperImpl implements DBAccessHelper {
 
@@ -128,17 +131,19 @@ public class DBAccessHelperImpl implements DBAccessHelper {
 	public Employee getEmployeeByID(int empid) {
 		Employee emp = new Employee();
 		Connection connection = null;
-		PreparedStatement statement = null;
+		CallableStatement statement = null;
 		ResultSet resultSet = null;
 
 		try {
 
 			connection = DBUtil.getConnection();
-			String query = "select * from employees where employee_id=?";
-			statement = connection.prepareStatement(query);
+			String P_EMP_INFO = "{ call P_SECURITY.P_EMP_INFO(?,?) }";
+			statement = connection.prepareCall(P_EMP_INFO);
 			statement.setInt(1, empid);
+			statement.registerOutParameter(2, OracleTypes.CURSOR);
 
-			resultSet = statement.executeQuery();
+			statement.execute();
+			resultSet = (ResultSet)statement.getObject(2);
 			while (resultSet.next()) {
 
 				
