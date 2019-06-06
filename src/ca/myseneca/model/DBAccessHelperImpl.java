@@ -170,28 +170,190 @@ public class DBAccessHelperImpl implements DBAccessHelper {
 		return emp;
 	}
 
-	@Override
-	public void addEmployee(Employee emp) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public int updateEmployee(Employee emp) {
-		// TODO Auto-generated method stub
-		return 0;
+		Connection con = DBUtil.getConnection();
+		PreparedStatement pst = null;
+		int i = 0;
+		try {
+			con.setAutoCommit(false);
+			String sql = "update employees " + "set last_name = ?,email = ?,hire_date = ?,job_id =?"
+					+ "where employee_id = ?";
+			pst = con.prepareStatement(sql);
+
+			pst.setObject(1, emp.getLast_name());
+			pst.setObject(2, emp.getEmail());
+			pst.setObject(3, emp.getHire_date());
+			pst.setObject(4, emp.getJob_id());
+			pst.setObject(5, emp.getEmployee_id());
+
+			// Execute the update statement
+			i = pst.executeUpdate();
+			con.commit();
+			System.out.println("row updated  ");
+
+		} catch (IllegalArgumentException se) {
+			System.out.println("Exception :" + se.getMessage());
+			se.printStackTrace();
+
+		} catch (SQLException se) {
+			System.out.println("Exception :" + se.getMessage());
+			se.printStackTrace();
+
+		} catch (Exception e) {
+			System.out.println("Exception :" + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null)
+					pst.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+			}
+
+		}
+		return i;
+	}
+
+
+	@Override
+	public void addEmployee(Employee emp) {
+		Connection con = DBUtil.getConnection();
+		PreparedStatement pst = null;
+		try {
+			con.setAutoCommit(false);
+			String sql = "INSERT INTO employees (employee_id,last_name,email,hire_date,job_id) VALUES (?,?,?,?,?)";
+			pst = con.prepareStatement(sql);
+
+			pst.setObject(1, emp.getEmployee_id());
+			pst.setObject(2, emp.getLast_name());
+			pst.setObject(3, emp.getEmail());
+			pst.setObject(4, emp.getHire_date());
+			pst.setObject(5, emp.getJob_id());
+
+			// Execute the update statement
+			pst.executeUpdate();
+			con.commit();
+			System.out.println("row inserted ");
+
+		} catch (IllegalArgumentException se) {
+			System.out.println("Exception :" + se.getMessage());
+			se.printStackTrace();
+
+		} catch (SQLException se) {
+			System.out.println("Exception :" + se.getMessage());
+			se.printStackTrace();
+
+		} catch (Exception e) {
+			System.out.println("Exception :" + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null)
+					pst.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+			}
+
+		}
+		
 	}
 
 	@Override
 	public int deleteEmployeeByID(int empid) {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		Connection con = DBUtil.getConnection();
+		PreparedStatement pst = null;
+		int i = 0;
+		try {
+
+			con.setAutoCommit(false);
+
+			String sql = "delete from employees where employee_id = ?";
+
+			// PreparedStatement to set parameter
+			pst = con.prepareStatement(sql);
+			pst.setObject(1, empid);
+			// Execute the update statement
+			i = pst.executeUpdate();
+			con.commit();
+
+		} catch (SQLException se) {
+			// Handle errors for JDBC
+			System.out.println("Exception :" + se.getMessage());
+			se.printStackTrace();
+
+		} catch (Exception e) {
+			System.out.println("Exception :" + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null)
+					pst.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+
+		}
+		return i;
 	}
 
 	@Override
 	public boolean batchUpdate(String[] SQLs) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean flag = false;
+		Connection con = DBUtil.getConnection();
+		PreparedStatement pst = null;
+
+		try {
+			con.setAutoCommit(false);
+
+			for (int i = 0; i < SQLs.length; i++) {
+				String sql = SQLs[i];
+
+				pst = con.prepareStatement(sql);
+				pst.addBatch();
+				pst.executeBatch();
+			}
+
+			System.out.println(" rows updated " + SQLs.length);
+			con.commit();
+			flag = true;
+			// Execute the update statement
+			System.out.println(" rows inserted ");
+
+		} catch (SQLException se) {
+			try {
+				con.rollback();
+				flag = false;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.out.println("Rollback failed");
+			}
+			System.out.println("Exception :" + se.getMessage());
+			System.out.println("Update failed, Rollback");
+			se.printStackTrace();
+
+		} catch (Exception e) {
+			System.out.println("Exception :" + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null)
+					pst.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+			}
+
+		}
+
+		return flag;
 	}
 
 }
