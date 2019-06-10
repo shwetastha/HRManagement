@@ -2,18 +2,167 @@ package ca.myseneca.model;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import oracle.jdbc.internal.OracleTypes;
 
-public class DBAccessHelperImpl implements DBAccessHelper {
+public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessHelper {
+
+	
+
+	public DBAccessHelperImpl() throws RemoteException {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public int updateEmployee(Employee emp) {
+		
+		//use oci connection 
+		Connection con = DBUtil.getOciConnection();
+		//Connection con = DBUtil.getConnection();
+		PreparedStatement pst = null;
+		int i = 0;
+		try {
+			con.setAutoCommit(false);
+			String sql = "update employees " + "set last_name = ?,email = ?,hire_date = ?,job_id =?"
+					+ "where employee_id = ?";
+			pst = con.prepareStatement(sql);
+
+			pst.setObject(1, emp.getLast_name());
+			pst.setObject(2, emp.getEmail());
+			pst.setObject(3, emp.getHire_date());
+			pst.setObject(4, emp.getJob_id());
+			pst.setObject(5, emp.getEmployee_id());
+
+			// Execute the update statement
+			i = pst.executeUpdate();
+			con.commit();
+			System.out.println("row updated  ");
+
+		} catch (IllegalArgumentException se) {
+			System.out.println("Exception :" + se.getMessage());
+			se.printStackTrace();
+
+		} catch (SQLException se) {
+			System.out.println("Exception :" + se.getMessage());
+			se.printStackTrace();
+
+		} catch (Exception e) {
+			System.out.println("Exception :" + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null)
+					pst.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+			}
+
+		}
+		return i;
+	}
+
+	@Override
+	public void addEmployee(Employee emp) {
+		Connection con = DBUtil.getOciConnection();
+		//Connection con = DBUtil.getConnection();
+		PreparedStatement pst = null;
+		try {
+			con.setAutoCommit(false);
+			String sql = "INSERT INTO employees (employee_id,last_name,email,hire_date,job_id) VALUES (?,?,?,?,?)";
+			pst = con.prepareStatement(sql);
+
+			pst.setObject(1, emp.getEmployee_id());
+			pst.setObject(2, emp.getLast_name());
+			pst.setObject(3, emp.getEmail());
+			pst.setObject(4, emp.getHire_date());
+			pst.setObject(5, emp.getJob_id());
+
+			// Execute the update statement
+			pst.executeUpdate();
+			con.commit();
+			System.out.println("row inserted ");
+
+		} catch (IllegalArgumentException se) {
+			System.out.println("Exception :" + se.getMessage());
+			se.printStackTrace();
+
+		} catch (SQLException se) {
+			System.out.println("Exception :" + se.getMessage());
+			se.printStackTrace();
+
+		} catch (Exception e) {
+			System.out.println("Exception :" + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null)
+					pst.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+			}
+
+		}
+		
+	}
+
+	@Override
+	public int deleteEmployeeByID(int empid) {
+		
+		Connection con = DBUtil.getOciConnection();
+		//Connection con = DBUtil.getConnection();
+		PreparedStatement pst = null;
+		int i = 0;
+		try {
+
+			con.setAutoCommit(false);
+
+			String sql = "delete from employees where employee_id = ?";
+
+			// PreparedStatement to set parameter
+			pst = con.prepareStatement(sql);
+			pst.setObject(1, empid);
+			// Execute the update statement
+			i = pst.executeUpdate();
+			con.commit();
+
+		} catch (SQLException se) {
+			// Handle errors for JDBC
+			System.out.println("Exception :" + se.getMessage());
+			se.printStackTrace();
+
+		} catch (Exception e) {
+			System.out.println("Exception :" + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pst != null)
+					pst.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+
+		}
+		return i;
+	}
 
 	@Override
 	public int getEmployeeID(String user, String password) {
@@ -143,10 +292,9 @@ public class DBAccessHelperImpl implements DBAccessHelper {
 			statement.registerOutParameter(2, OracleTypes.CURSOR);
 
 			statement.execute();
-			resultSet = (ResultSet)statement.getObject(2);
+			resultSet = (ResultSet) statement.getObject(2);
 			while (resultSet.next()) {
 
-				
 				emp.setEmployee_id(resultSet.getInt("employee_id"));
 				emp.setFirst_name(resultSet.getString("first_name"));
 				emp.setLast_name(resultSet.getString("last_name"));
@@ -159,7 +307,6 @@ public class DBAccessHelperImpl implements DBAccessHelper {
 				emp.setManager_id(resultSet.getInt("manager_id"));
 				emp.setDepartment_id(resultSet.getInt("department_id"));
 
-				
 			}
 		} catch (SQLException e) {
 			System.err.println("The error is:  " + e.getMessage());
@@ -168,139 +315,6 @@ public class DBAccessHelperImpl implements DBAccessHelper {
 			DBUtil.close(connection, statement);
 		}
 		return emp;
-	}
-
-
-	@Override
-	public int updateEmployee(Employee emp) {
-		Connection con = DBUtil.getConnection();
-		PreparedStatement pst = null;
-		int i = 0;
-		try {
-			con.setAutoCommit(false);
-			String sql = "update employees " + "set last_name = ?,email = ?,hire_date = ?,job_id =?"
-					+ "where employee_id = ?";
-			pst = con.prepareStatement(sql);
-
-			pst.setObject(1, emp.getLast_name());
-			pst.setObject(2, emp.getEmail());
-			pst.setObject(3, emp.getHire_date());
-			pst.setObject(4, emp.getJob_id());
-			pst.setObject(5, emp.getEmployee_id());
-
-			// Execute the update statement
-			i = pst.executeUpdate();
-			con.commit();
-			System.out.println("row updated  ");
-
-		} catch (IllegalArgumentException se) {
-			System.out.println("Exception :" + se.getMessage());
-			se.printStackTrace();
-
-		} catch (SQLException se) {
-			System.out.println("Exception :" + se.getMessage());
-			se.printStackTrace();
-
-		} catch (Exception e) {
-			System.out.println("Exception :" + e.getMessage());
-			e.printStackTrace();
-		} finally {
-			try {
-				if (pst != null)
-					pst.close();
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-			}
-
-		}
-		return i;
-	}
-
-
-	@Override
-	public void addEmployee(Employee emp) {
-		Connection con = DBUtil.getConnection();
-		PreparedStatement pst = null;
-		try {
-			con.setAutoCommit(false);
-			String sql = "INSERT INTO employees (employee_id,last_name,email,hire_date,job_id) VALUES (?,?,?,?,?)";
-			pst = con.prepareStatement(sql);
-
-			pst.setObject(1, emp.getEmployee_id());
-			pst.setObject(2, emp.getLast_name());
-			pst.setObject(3, emp.getEmail());
-			pst.setObject(4, emp.getHire_date());
-			pst.setObject(5, emp.getJob_id());
-
-			// Execute the update statement
-			pst.executeUpdate();
-			con.commit();
-			System.out.println("row inserted ");
-
-		} catch (IllegalArgumentException se) {
-			System.out.println("Exception :" + se.getMessage());
-			se.printStackTrace();
-
-		} catch (SQLException se) {
-			System.out.println("Exception :" + se.getMessage());
-			se.printStackTrace();
-
-		} catch (Exception e) {
-			System.out.println("Exception :" + e.getMessage());
-			e.printStackTrace();
-		} finally {
-			try {
-				if (pst != null)
-					pst.close();
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-			}
-
-		}
-		
-	}
-
-	@Override
-	public int deleteEmployeeByID(int empid) {
-		
-		Connection con = DBUtil.getConnection();
-		PreparedStatement pst = null;
-		int i = 0;
-		try {
-
-			con.setAutoCommit(false);
-
-			String sql = "delete from employees where employee_id = ?";
-
-			// PreparedStatement to set parameter
-			pst = con.prepareStatement(sql);
-			pst.setObject(1, empid);
-			// Execute the update statement
-			i = pst.executeUpdate();
-			con.commit();
-
-		} catch (SQLException se) {
-			// Handle errors for JDBC
-			System.out.println("Exception :" + se.getMessage());
-			se.printStackTrace();
-
-		} catch (Exception e) {
-			System.out.println("Exception :" + e.getMessage());
-			e.printStackTrace();
-		} finally {
-			try {
-				if (pst != null)
-					pst.close();
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				System.out.println(e.getMessage());
-			}
-
-		}
-		return i;
 	}
 
 	@Override

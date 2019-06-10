@@ -1,19 +1,19 @@
 package ca.myseneca.model;
 
+import java.rmi.Remote;
 import java.util.ArrayList;
 
-public interface DBAccessHelper {
+public interface DBAccessHelper extends Remote {
 
-	public int getEmployeeID(String user, String password);
+	public int getEmployeeID(String user, String password) throws Exception;
 		
-	public ArrayList<Employee> getAllEmployees();
-	public ArrayList<Employee> getEmployeesByDepartmentID(int depid);
-	public Employee getEmployeeByID(int empid);
+	public ArrayList<Employee> getAllEmployees()throws Exception;
+	public ArrayList<Employee> getEmployeesByDepartmentID(int depid)throws Exception;
+	public Employee getEmployeeByID(int empid)throws Exception;
 	
-	public void addEmployee(Employee emp);
-	public int updateEmployee(Employee emp);
-	public int deleteEmployeeByID(int empid);
-	
-	public boolean batchUpdate(String[] SQLs);
+	public void addEmployee(Employee emp)throws Exception;
+	public int updateEmployee(Employee emp)throws Exception;
+	public int deleteEmployeeByID(int empid)throws Exception;
+	public boolean batchUpdate(String[] SQLs)throws Exception;
 	
 }

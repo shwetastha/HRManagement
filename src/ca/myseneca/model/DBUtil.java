@@ -1,6 +1,5 @@
 package ca.myseneca.model;
 
-
 import java.io.FileReader;
 import java.io.Reader;
 import java.sql.Connection;
@@ -16,6 +15,7 @@ public class DBUtil {
 	private static Connection con;
 	private static String driver;
 	private static String url;
+	private static String Ociurl;
 	private static String user;
 	private static String password;
 
@@ -30,6 +30,7 @@ public class DBUtil {
 			
 			driver = props.getProperty("driver");
 			url = props.getProperty("url");
+			Ociurl = props.getProperty("Ociurl");
 			user = props.getProperty("user");
 			password = props.getProperty("password");
 			
@@ -38,10 +39,24 @@ public class DBUtil {
 		}
 
 	}
+	
+	public static Connection getOciConnection() {
+		try {
+			// 1 register OCI drive
+			Class.forName(driver);
+			
+			// 2 connection with oracle
+			Connection con = DriverManager.getConnection(Ociurl, user, password);
+			
+			return con;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 	public static Connection getConnection() {
 		try {
 			// 1 register drive
-			Class.forName("oracle.jdbc.OracleDriver");
+			Class.forName(driver);
 			
 			// 2 connection with oracle
 			Connection con = DriverManager.getConnection(url, user, password);

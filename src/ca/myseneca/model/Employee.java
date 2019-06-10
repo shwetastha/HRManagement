@@ -1,5 +1,8 @@
 package ca.myseneca.model;
 
+import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.ResultSet;
 import java.util.Date;
 
@@ -13,8 +16,7 @@ import java.util.Date;
 * @version 1.0
 * @since   2019-03-31
 */
-public class Employee {
-	
+public class Employee implements Serializable {
 	
 	private int employee_id;
 	private String first_name;
@@ -31,6 +33,7 @@ public class Employee {
 	public int getEmployee_id() {
 		return employee_id;
 	}
+	
 	public void setEmployee_id(int employee_id) {
 		this.employee_id = employee_id;
 	}
