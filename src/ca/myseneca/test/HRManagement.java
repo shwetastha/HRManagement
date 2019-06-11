@@ -13,44 +13,47 @@ import ca.myseneca.model.DBUtil;
 import ca.myseneca.model.Employee;
 
 public class HRManagement {
-	static DBAccessHelper dbaccess = new DBAccessHelperImpl();
+	static DBAccessHelper dbaccess;
 
 	public static void main(String[] args) throws Exception {
+		dbaccess = new DBAccessHelperImpl();
 		Scanner reader = new Scanner(System.in);
 		String exit = "no";
+		
 		while (exit.equalsIgnoreCase("no")) {
 			System.out.println("Please Enter the Username:");
 			String username = reader.nextLine();
 			System.out.println("Please Enter the Password:");
 			String password = reader.nextLine();
-			if (dbaccess.getEmployeeID(username, password) != 0) {
+			System.out.println("Connecting to the Database...");
+			int emp_id = dbaccess.getEmployeeID(username, password);
+			if (emp_id != 0) {
+				System.out.println("Connected to the database!");
 
 				System.out.println("*********************");
+				System.out.println("Employee Information: ");
+				testGetEmployeeByID(emp_id);
+				System.out.println("*********************");
 				System.out.println("Testing addEmployee: ");
-				// testAddEmployees();
+				testAddEmployees();
 				System.out.println("*********************");
 				System.out.println("Testing deleteEmployeeByID: ");
-				// testDeleteEmployees();
+				testDeleteEmployees();
 				System.out.println("*********************");
 				System.out.println("Testing updateEmployeeByID: ");
-				// testUpdateEmployees();
+				testUpdateEmployees();
 
 				System.out.println("*********************");
 				System.out.println("Testing batchUpdate: ");
 				testbatchUpdate();
 
 				System.out.println("*********************");
-				System.out.println("Testing Security: ");
-				testGetEmployeeID();
-				System.out.println("*********************");
 				System.out.println("Testing GetAllEmployees: ");
 				testGetAllEmployees();
 				System.out.println("*********************");
 				System.out.println("Testing GetEmployeesByDepartmentID: ");
 				testGetEmployeesByDepartmentID();
-				System.out.println("*********************");
-				System.out.println("Testing GetEmployeeByID: ");
-				testGetEmployeeByID();
+				
 			} else {
 
 				System.out.println("Invalid Username and Password.");
@@ -62,7 +65,7 @@ public class HRManagement {
 
 	}
 
-	public static void testUpdateEmployees() {
+	public static void testUpdateEmployees() throws Exception {
 		Employee emp = new Employee();
 		emp.setEmail("vvliuvvliu");
 		emp.setLast_name("vvliu");
@@ -74,7 +77,7 @@ public class HRManagement {
 		dbaccess.updateEmployee(emp);
 	}
 
-	public static void testbatchUpdate() {
+	public static void testbatchUpdate() throws Exception {
 		String[] sqls = new String[6];
 		sqls[0] = "delete from employees where EMPLOYEE_ID = 554";
 		sqls[1] = "delete from employees where EMPLOYEE_ID = 314";
@@ -86,7 +89,7 @@ public class HRManagement {
 
 	}
 
-	public static void testAddEmployees() {
+	public static void testAddEmployees() throws Exception {
 		Employee emp = new Employee();
 		emp.setEmail("chenyong122");
 		emp.setLast_name("chenaaa2");
@@ -98,7 +101,7 @@ public class HRManagement {
 		dbaccess.addEmployee(emp);
 	}
 
-	public static void testDeleteEmployees() {
+	public static void testDeleteEmployees() throws Exception {
 
 		dbaccess.deleteEmployeeByID(404);
 
@@ -145,7 +148,7 @@ public class HRManagement {
 		}
 	}
 
-	public static void testGetEmployeeID() {
+	public static void testGetEmployeeID() throws Exception {
 
 		String user = "hr";
 		String password = "hr";
@@ -163,13 +166,13 @@ public class HRManagement {
 		System.out.println("Security Output: " + dbaccess.getEmployeeID(user, password));
 	}
 
-	public static void testGetAllEmployees() {
+	public static void testGetAllEmployees() throws Exception {
 
 		ArrayList<Employee> list = dbaccess.getAllEmployees();
 		System.out.println("Total employee count: " + list.size());
 	}
 
-	public static void testGetEmployeesByDepartmentID() {
+	public static void testGetEmployeesByDepartmentID() throws Exception {
 
 		ArrayList<Employee> list = new ArrayList<Employee>();
 		list = dbaccess.getEmployeesByDepartmentID(80);
@@ -178,8 +181,8 @@ public class HRManagement {
 		System.out.println("Total employee count for department 0: " + list.size());
 	}
 
-	public static void testGetEmployeeByID() {
-		Employee emp = dbaccess.getEmployeeByID(164);
+	public static void testGetEmployeeByID(int emp_id) throws Exception {
+		Employee emp = dbaccess.getEmployeeByID(emp_id);
 		System.out.println(emp.toString());
 	}
 }

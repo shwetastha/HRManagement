@@ -1,39 +1,37 @@
 package ca.myseneca.model;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import oracle.jdbc.internal.OracleTypes;
 
+/**
+ * 
+ * @author Shweta Shrestha, Yonghau Chen
+ * DBAccessHelperImpl class implements DBAccessHelper interface.
+ * It implements methods that access Database.
+ *
+ */
 public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessHelper {
-
-	
 
 	public DBAccessHelperImpl() throws RemoteException {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
+	
 	@Override
 	public int updateEmployee(Employee emp) {
-		
-		//use oci connection 
+
+		// use oci connection
 		Connection con = DBUtil.getOciConnection();
-		//Connection con = DBUtil.getConnection();
+		// Connection con = DBUtil.getConnection();
 		PreparedStatement pst = null;
 		int i = 0;
 		try {
@@ -80,7 +78,7 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 	@Override
 	public void addEmployee(Employee emp) {
 		Connection con = DBUtil.getOciConnection();
-		//Connection con = DBUtil.getConnection();
+		// Connection con = DBUtil.getConnection();
 		PreparedStatement pst = null;
 		try {
 			con.setAutoCommit(false);
@@ -119,27 +117,36 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 			}
 
 		}
-		
+
 	}
 
 	@Override
 	public int deleteEmployeeByID(int empid) {
-		
+
 		Connection con = DBUtil.getOciConnection();
-		//Connection con = DBUtil.getConnection();
+		// Connection con = DBUtil.getConnection();
 		PreparedStatement pst = null;
+		ResultSet resultSet = null;
 		int i = 0;
 		try {
 
 			con.setAutoCommit(false);
 
-			String sql = "delete from employees where employee_id = ?";
+			String sql = "select employee_id from employees where employee_id = ?";
 
 			// PreparedStatement to set parameter
-			pst = con.prepareStatement(sql);
+
+			pst = con.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			pst.setObject(1, empid);
 			// Execute the update statement
-			i = pst.executeUpdate();
+			resultSet = pst.executeQuery();
+			int rowCount = 0;
+			while (resultSet.next()) {
+
+				resultSet.deleteRow();
+				rowCount++;
+			}
+			System.out.println("Rows Deleted: " + rowCount);
 			con.commit();
 
 		} catch (SQLException se) {
@@ -172,7 +179,7 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 		int sec = 0;
 		try {
 
-			connection = DBUtil.getConnection();
+			connection = DBUtil.getOciConnection();
 			String fSecurity = "{? = call P_SECURITY.F_SECURITY(?,?)}";
 			statement = connection.prepareCall(fSecurity);
 
