@@ -3,6 +3,13 @@ package ca.myseneca.model;
 import java.rmi.Remote;
 import java.util.ArrayList;
 
+/**
+ * DBAccessHelper
+ * This interface defines methods that needs to be implemented.
+ * 
+ * @author Shweta Shrestha
+ *
+ */
 public interface DBAccessHelper extends Remote {
 
 	public int getEmployeeID(String user, String password) throws Exception;

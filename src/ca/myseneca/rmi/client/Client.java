@@ -1,16 +1,28 @@
 package ca.myseneca.rmi.client;
 
-import java.util.*;
+import java.rmi.Naming;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 import ca.myseneca.model.DBAccessHelper;
 import ca.myseneca.model.Employee;
 
-import java.io.Serializable;
-import java.rmi.*;
-import java.rmi.server.UnicastRemoteObject;
-
+/**
+ * Client This class is the client side code which is identical to the
+ * HRManagment class.
+ * 
+ * @author Shweta Shrestha, Yonghau Chen
+ *
+ */
 public class Client {
 
+	/**
+	 * This is the main method that calls all the functions and interacts with the
+	 * Server.
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 
 		DBAccessHelper obj = (DBAccessHelper) Naming.lookup("rmi://localhost:5008/HRManagementService");
@@ -26,65 +38,155 @@ public class Client {
 			System.out.println("Connecting to the Database...");
 			int emp_id = obj.getEmployeeID(username, password);
 			if (emp_id != 0) {
+
 				System.out.println("Connected to the database!");
 
-				ArrayList<Employee> list = obj.getAllEmployees();
-				System.out.println("Total number of all employees is:" + list.size());
+				System.out.println("*********************");
+				System.out.println("Employee Information: ");
+				getEmployeeByID(obj, emp_id);
+				System.out.println("*********************");
+				System.out.println("Adding a New Employee: ");
+				addEmployees(obj);
+				System.out.println("*********************");
+				System.out.println("Deleting the Employee: ");
+				deleteEmployees(obj);
+				System.out.println("*********************");
+				System.out.println("Updating Employee row: ");
+				updateEmployees(obj);
 
-				ArrayList<Employee> list2 = obj.getEmployeesByDepartmentID(80);
-				System.out.println("The number of employees in 80 department is:" + list2.size());
+				System.out.println("*********************");
+				System.out.println("Batch Update: ");
+				batchUpdate(obj);
 
-				Employee emp = obj.getEmployeeByID(900);
-				System.out.println(emp.toString());
-
+				System.out.println("*********************");
+				System.out.println("Retrieve All Employees: ");
+				getAllEmployees(obj);
+				System.out.println("*********************");
+				System.out.println("Retrieve Total count of employees for department: ");
+				getEmployeesByDepartmentID(obj);
+				System.out.println("*********************");
 			} else {
-
+				System.out.println("*********************");
 				System.out.println("Invalid Username and Password.");
-
+				System.out.println("*********************");
 			}
 			System.out.println("Do you want to exit? yes/no");
 			exit = reader.nextLine();
 		}
+		
 
 	}
 
-	public static void AddEmployees(DBAccessHelper obj) throws Exception {
+	/**
+	 * This method updates an employee row.
+	 * 
+	 * @param DBAccessHelper dbaccess
+	 * @throws Exception
+	 */
+	public static void updateEmployees(DBAccessHelper dbaccess) throws Exception {
 		Employee emp = new Employee();
-		emp.setEmail("90190");
-		emp.setLast_name("90190");
+		emp.setEmail("test@email.com");
+		emp.setLast_name("Liu");
 		emp.setJob_id("AC_ACCOUNT");
 		emp.setHire_date(java.sql.Date.valueOf("2013-09-04"));
-		emp.setEmployee_id(911);
-		System.out.println(emp);
+		emp.setEmployee_id(403);
+		System.out.println("Updating Employee: " + emp.toString());
 
-		obj.addEmployee(emp);
+		System.out.println("Rows Updated:"+dbaccess.updateEmployee(emp));
 	}
 
-	public static void batchUpdate(DBAccessHelper obj) throws Exception {
-		String[] sqls = new String[3];
-		sqls[0] = "INSERT INTO employees(employee_id,last_name,email,hire_date,job_id)"
-				+ " VALUES (300,'300','300',TO_DATE('07-JUN-1994', 'dd-MON-yyyy'),'AC_ACCOUNT')";
-		sqls[1] = "delete from employees where EMPLOYEE_ID = 301";
-		sqls[2] = "update employees  set last_name = '401',email = '401',hire_date = TO_DATE('07-JUN-1994', 'dd-MON-yyyy'),job_id ='AC_ACCOUNT'  "
-				+ "where employee_id = 401";
-		// sqls[1] = "delete from employees where EMPLOYEE_ID = 304";
-		// sqls[3] = "INSERT INTO
-		// employees(employee_id,last_name,email,hire_date,job_id) VALUES
-		// (644,'c41','d2eeee',TO_DATE('07-JUN-1994', 'dd-MON-yyyy'),'AC_ACCOUNT')";
-
-		obj.batchUpdate(sqls);
+	/**
+	 * This method calls the batch update function.
+	 * 
+	 * @param DBAccessHelper dbaccess
+	 * @throws Exception
+	 */
+	public static void batchUpdate(DBAccessHelper dbaccess) throws Exception {
+		String[] sqls = new String[6];
+		sqls[0] = "delete from employees where EMPLOYEE_ID = 554";
+		sqls[1] = "delete from employees where EMPLOYEE_ID = 314";
+		sqls[2] = "delete from employees where EMPLOYEE_ID = 544";
+		sqls[3] = "INSERT INTO employees(employee_id,last_name,email,hire_date,job_id) VALUES (544,'Smith','smith@email.com',TO_DATE('07-JUN-1994', 'dd-MON-yyyy'),'AC_ACCOUNT')";
+		sqls[4] = "INSERT INTO employees(employee_id,last_name,email,hire_date,job_id) VALUES (554,'Sal','sal@email.com',TO_DATE('07-JUN-1994', 'dd-MON-yyyy'),'AC_ACCOUNT')";
+		sqls[5] = "update employees  set last_name = 'c00',email = 'dc00d',hire_date = TO_DATE('07-JUN-1994', 'dd-MON-yyyy'),job_id ='AC_ACCOUNT'  where employee_id = 554";
+		System.out.println("SQL Scripts:");
+		for(String sql: sqls)
+			System.out.println(sql);
+		
+		if(dbaccess.batchUpdate(sqls))
+			System.out.println("Successfully executed the batch update.");
+		else
+			System.out.println("Failure to execute the batch update.");
 
 	}
 
-	public static void UpdateEmployees(DBAccessHelper obj) throws Exception {
+	/**
+	 * This method inserts a new employee row.
+	 * 
+	 * @param DBAccessHelper dbaccess
+	 * @throws Exception
+	 */
+	public static void addEmployees(DBAccessHelper dbaccess) throws Exception {
 		Employee emp = new Employee();
-		emp.setEmail("901901");
-		emp.setLast_name("901901");
+		emp.setEmail("chenyong122@email.com");
+		emp.setLast_name("Chen");
 		emp.setJob_id("AC_ACCOUNT");
 		emp.setHire_date(java.sql.Date.valueOf("2013-09-04"));
-		emp.setEmployee_id(901);
+		emp.setEmployee_id(404);
 		System.out.println(emp);
-		obj.updateEmployee(emp);
+
+		dbaccess.addEmployee(emp);
+		System.out.println("Successfully Inserted.");
+	}
+
+	/**
+	 * Deleting the employee added through the addEmployee functon.
+	 * 
+	 * @param DBAccessHelper dbaccess
+	 * @throws Exception
+	 */
+	public static void deleteEmployees(DBAccessHelper dbaccess) throws Exception {
+
+		System.out.println("Rows Deleted: "+dbaccess.deleteEmployeeByID(404));
+
+	}
+
+	/**
+	 * This method retrieves all the employees from the database.
+	 * 
+	 * @param DBAccessHelper dbaccess
+	 * @throws Exception
+	 */
+	public static void getAllEmployees(DBAccessHelper dbaccess) throws Exception {
+
+		ArrayList<Employee> list = dbaccess.getAllEmployees();
+		System.out.println("Total employee count: " + list.size());
+	}
+
+	/**
+	 * This method retrieves total number of the employees from the department 80.
+	 * 
+	 * @param DBAccessHelper dbaccess
+	 * @throws Exception
+	 */
+	public static void getEmployeesByDepartmentID(DBAccessHelper dbaccess) throws Exception {
+
+		ArrayList<Employee> list = new ArrayList<Employee>();
+		list = dbaccess.getEmployeesByDepartmentID(80);
+		System.out.println("Total employee count for department 80: " + list.size());
+
+	}
+
+	/**
+	 * This method gets the information of the employee.
+	 * 
+	 * @param DBAccessHelper dbaccess
+	 * @param int            employee_id
+	 * @throws Exception
+	 */
+	public static void getEmployeeByID(DBAccessHelper dbaccess, int emp_id) throws Exception {
+		Employee emp = dbaccess.getEmployeeByID(emp_id);
+		System.out.println(emp.toString());
 	}
 
 }

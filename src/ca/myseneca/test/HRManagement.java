@@ -12,6 +12,13 @@ import ca.myseneca.model.DBAccessHelperImpl;
 import ca.myseneca.model.DBUtil;
 import ca.myseneca.model.Employee;
 
+/**
+ * HRManagement This class acts as a test class to test all the functionality of
+ * the DBAccessHelperImpl.
+ * 
+ * @author Shweta Shrestha, Yonghau Chen
+ *
+ */
 public class HRManagement {
 	static DBAccessHelper dbaccess;
 
@@ -19,7 +26,7 @@ public class HRManagement {
 		dbaccess = new DBAccessHelperImpl();
 		Scanner reader = new Scanner(System.in);
 		String exit = "no";
-		
+
 		while (exit.equalsIgnoreCase("no")) {
 			System.out.println("Please Enter the Username:");
 			String username = reader.nextLine();
@@ -53,7 +60,7 @@ public class HRManagement {
 				System.out.println("*********************");
 				System.out.println("Testing GetEmployeesByDepartmentID: ");
 				testGetEmployeesByDepartmentID();
-				
+
 			} else {
 
 				System.out.println("Invalid Username and Password.");

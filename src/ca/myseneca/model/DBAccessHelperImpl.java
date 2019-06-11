@@ -10,14 +10,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import oracle.jdbc.OracleCallableStatement;
 import oracle.jdbc.internal.OracleTypes;
 
 /**
+ * DBAccessHelperImpl 
+ * DBAccessHelperImpl class implements DBAccessHelper
+ * interface. It implements methods that access Database.
  * 
  * @author Shweta Shrestha, Yonghau Chen
- * DBAccessHelperImpl class implements DBAccessHelper interface.
- * It implements methods that access Database.
- *
+ * 
  */
 public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessHelper {
 
@@ -25,7 +27,15 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 		super();
 	}
 
-	
+	/**
+	 * This method updates the database with the values set in the Employee object.
+	 * This method uses prepared statement to accomplish this task.
+	 * 
+	 * @param Employee This method takes Employee object as a parameter that needs
+	 *                 to be updated in the database.
+	 * @return int This method returns row count that has been affected by the
+	 *         update.
+	 */
 	@Override
 	public int updateEmployee(Employee emp) {
 
@@ -75,6 +85,15 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 		return i;
 	}
 
+	/**
+	 * This method inserts a new row in the database with the information provided
+	 * by the Employee object. This method uses PreparedStatement to accomplish this
+	 * task.
+	 * 
+	 * @return Nothing
+	 * @param Employee This method takes in Employee object as a parameter which
+	 *                 will be inserted to the database.
+	 */
 	@Override
 	public void addEmployee(Employee emp) {
 		Connection con = DBUtil.getOciConnection();
@@ -120,6 +139,14 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 
 	}
 
+	/**
+	 * This method uses the employee-id parameter to delete the row in the database.
+	 * This method uses updatable resultset to accomplish this task.
+	 * 
+	 * @returns int This method returns integer value of the row that was affected
+	 *          by the delete operation.
+	 * @param int This method takes employee_id as a parameter.
+	 */
 	@Override
 	public int deleteEmployeeByID(int empid) {
 
@@ -171,6 +198,16 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 		return i;
 	}
 
+	/**
+	 * This method verifies if the combination of username and password provvided is
+	 * an active user in the database. This method calls storedProcedure with the
+	 * use of CallableStatement in the database to accomplish this task.
+	 * 
+	 * @return int This method returns employee_id of the combination of the
+	 *         username and password is verified. Otherwise, 0 will be returned.
+	 * @param String user This method takes user name as the first parameter.
+	 * @param String password This method takes password as the second parameter.
+	 */
 	@Override
 	public int getEmployeeID(String user, String password) {
 		Connection connection = null;
@@ -202,6 +239,12 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 
 	}
 
+	/**
+	 * This method returns all the employee rows from the database. This method uses
+	 * Statement and static SQL statement to accomplish this task.
+	 * 
+	 * @return ArrayList<Employee> This method returns the list of employees.
+	 */
 	@Override
 	public ArrayList<Employee> getAllEmployees() {
 		ArrayList<Employee> employeeList = new ArrayList<Employee>();
@@ -242,6 +285,14 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 		return employeeList;
 	}
 
+	/**
+	 * This method returns list of employees that are associated with the
+	 * department_id that is provided.
+	 * 
+	 * @return ArrayList<Employee> This method returns lst of employees who work in
+	 *         the same deartment_id that was requested.
+	 * @param int department_id This method takes in the department_id.
+	 */
 	@Override
 	public ArrayList<Employee> getEmployeesByDepartmentID(int depid) {
 		ArrayList<Employee> employeeList = new ArrayList<Employee>();
@@ -283,18 +334,28 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 		return employeeList;
 	}
 
+	/**
+	 * This method provides the employee information with the employee_id provided.
+	 * This method uses OracleCallableStatement which calls the StoredProcedure in
+	 * the database to accomplish this task.
+	 * 
+	 * @return Employee This method returns the Employee object with the information
+	 *         retrieved from the database.
+	 * @param int employee_id This method takes in the employee_id to get the
+	 *            information.
+	 */
 	@Override
 	public Employee getEmployeeByID(int empid) {
 		Employee emp = new Employee();
 		Connection connection = null;
-		CallableStatement statement = null;
+		OracleCallableStatement statement = null;
 		ResultSet resultSet = null;
 
 		try {
 
 			connection = DBUtil.getConnection();
 			String P_EMP_INFO = "{ call P_SECURITY.P_EMP_INFO(?,?) }";
-			statement = connection.prepareCall(P_EMP_INFO);
+			statement = (OracleCallableStatement) connection.prepareCall(P_EMP_INFO);
 			statement.setInt(1, empid);
 			statement.registerOutParameter(2, OracleTypes.CURSOR);
 
@@ -324,6 +385,15 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 		return emp;
 	}
 
+	/**
+	 * This method executes batch update with all the sql statements provided in the
+	 * parameter.
+	 * 
+	 * @return boolean This method returns true if the batch update was successful
+	 *         and false if it was unsuccessful.
+	 * @param String[] SQL statements This method takes Strinf array with the sql
+	 *                 statements that needs to be executed.
+	 */
 	@Override
 	public boolean batchUpdate(String[] SQLs) {
 		boolean flag = false;
