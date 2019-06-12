@@ -9,7 +9,7 @@ import ca.myseneca.model.DBAccessHelperImpl;
 /**
  * Server This class is the server class.
  * 
- * @author Yonghau Chen, Shweta Shrestha
+ * @author  Yonghao Chen, Shweta Shrestha
  *
  */
 

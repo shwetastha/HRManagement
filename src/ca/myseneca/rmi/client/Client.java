@@ -11,7 +11,7 @@ import ca.myseneca.model.Employee;
  * Client This class is the client side code which is identical to the
  * HRManagment class.
  * 
- * @author Shweta Shrestha, Yonghau Chen
+ * @author Shweta Shrestha,  Yonghao Chen
  *
  */
 public class Client {

@@ -18,7 +18,7 @@ import oracle.jdbc.internal.OracleTypes;
  * DBAccessHelperImpl class implements DBAccessHelper
  * interface. It implements methods that access Database.
  * 
- * @author Shweta Shrestha, Yonghau Chen
+ * @author Shweta Shrestha, Yonghao Chen
  * 
  */
 public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessHelper {

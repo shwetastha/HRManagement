@@ -16,7 +16,7 @@ import ca.myseneca.model.Employee;
  * HRManagement This class acts as a test class to test all the functionality of
  * the DBAccessHelperImpl.
  * 
- * @author Shweta Shrestha, Yonghau Chen
+ * @author Shweta Shrestha,  Yonghao Chen
  *
  */
 public class HRManagement {

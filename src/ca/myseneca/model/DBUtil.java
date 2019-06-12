@@ -13,7 +13,7 @@ import java.util.Properties;
  * DBUtil This class is an utility class that holds functions that connects with
  * the Database.
  * 
- * @author Yonghau Chen
+ * @author Yonghao Chen
  *
  */
 public class DBUtil {
