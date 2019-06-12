@@ -59,7 +59,8 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 			// Execute the update statement
 			i = pst.executeUpdate();
 			con.commit();
-			System.out.println("row updated  ");
+			System.out.println("\nupdateEmployee Information for id: "+emp.getEmployee_id());
+			System.out.println("Rows updated:"+i);
 
 		} catch (IllegalArgumentException se) {
 			System.out.println("Exception :" + se.getMessage());
@@ -111,9 +112,10 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 			pst.setObject(5, emp.getJob_id());
 
 			// Execute the update statement
-			pst.executeUpdate();
+			int i= pst.executeUpdate();
 			con.commit();
-			System.out.println("row inserted ");
+			System.out.println("\naddEmployee for id: "+emp.getEmployee_id());
+			System.out.println("Row inserted: "+i);
 
 		} catch (IllegalArgumentException se) {
 			System.out.println("Exception :" + se.getMessage());
@@ -173,6 +175,7 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 				resultSet.deleteRow();
 				rowCount++;
 			}
+			System.out.println("\ndeleteEmployeeByID for id: "+empid);
 			System.out.println("Rows Deleted: " + rowCount);
 			con.commit();
 
@@ -228,6 +231,9 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 			statement.execute();
 
 			sec = statement.getInt(1);
+			
+			System.out.println("\ngetEmployeeID for user: "+user);
+			System.out.println("Employee Id retrieved: "+sec);
 
 		} catch (SQLException e) {
 			System.err.println("The error is:  " + e.getMessage());
@@ -276,6 +282,7 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 
 				employeeList.add(emp);
 			}
+			System.out.println("\ngetAllEmployees");
 		} catch (SQLException e) {
 			System.err.println("The error is:  " + e.getMessage());
 			e.printStackTrace();
@@ -325,6 +332,8 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 
 				employeeList.add(emp);
 			}
+			System.out.println("\ngetEmployeesByDepartmentID for department id:"+depid);
+			System.out.println("Rows selected: "+employeeList.size());
 		} catch (SQLException e) {
 			System.err.println("The error is:  " + e.getMessage());
 			e.printStackTrace();
@@ -376,6 +385,8 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 				emp.setDepartment_id(resultSet.getInt("department_id"));
 
 			}
+			System.out.println("\ngetEmployeeByID for ID :"+empid);
+			
 		} catch (SQLException e) {
 			System.err.println("The error is:  " + e.getMessage());
 			e.printStackTrace();
@@ -411,11 +422,11 @@ public class DBAccessHelperImpl extends UnicastRemoteObject implements DBAccessH
 				pst.executeBatch();
 			}
 
-			System.out.println(" rows updated " + SQLs.length);
 			con.commit();
 			flag = true;
 			// Execute the update statement
-			System.out.println(" rows inserted ");
+			System.out.println("\nSQL scripts executed: " + SQLs.length);
+			
 
 		} catch (SQLException se) {
 			try {
