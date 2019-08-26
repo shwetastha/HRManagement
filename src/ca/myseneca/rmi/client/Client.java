@@ -48,12 +48,14 @@ public class Client {
 				System.out.println("Adding a New Employee: ");
 				addEmployees(obj);
 				System.out.println("*********************");
-				System.out.println("Deleting the Employee: ");
-				deleteEmployees(obj);
-				System.out.println("*********************");
 				System.out.println("Updating Employee row: ");
 				updateEmployees(obj);
 
+				System.out.println("*********************");
+				System.out.println("Deleting the Employee: ");
+				deleteEmployees(obj);
+				getEmployeeByID(obj, 404);
+				
 				System.out.println("*********************");
 				System.out.println("Batch Update: ");
 				batchUpdate(obj);
@@ -86,10 +88,11 @@ public class Client {
 	public static void updateEmployees(DBAccessHelper dbaccess) throws Exception {
 		Employee emp = new Employee();
 		emp.setEmail("test@email.com");
-		emp.setLast_name("Liu");
+		emp.setLast_name("Lee");
+		emp.setFirst_name("Bob");
 		emp.setJob_id("AC_ACCOUNT");
 		emp.setHire_date(java.sql.Date.valueOf("2013-09-04"));
-		emp.setEmployee_id(403);
+		emp.setEmployee_id(404);
 		System.out.println("Updating Employee: " + emp.toString());
 
 		System.out.println("Rows Updated:"+dbaccess.updateEmployee(emp));
@@ -128,8 +131,10 @@ public class Client {
 	 */
 	public static void addEmployees(DBAccessHelper dbaccess) throws Exception {
 		Employee emp = new Employee();
-		emp.setEmail("chenyong122@email.com");
-		emp.setLast_name("Chen");
+		emp.setEmail("bob@seneca.ca");
+		emp.setLast_name("Marley");
+		emp.setFirst_name("Bob");
+		emp.setPhone_number("313149108");
 		emp.setJob_id("AC_ACCOUNT");
 		emp.setHire_date(java.sql.Date.valueOf("2013-09-04"));
 		emp.setEmployee_id(404);
@@ -161,6 +166,7 @@ public class Client {
 
 		ArrayList<Employee> list = dbaccess.getAllEmployees();
 		System.out.println("Total employee count: " + list.size());
+		System.out.println("All EMployees: "+list.toString());
 	}
 
 	/**
